@@ -161,9 +161,10 @@
   }
   .date .week {
     font-size: clamp(18px, 3.6vmin, 32px);
-    letter-spacing: 0;
+    letter-spacing: 0.15em;
     font-weight: 500;
     color: #a8a8b0;
+    text-transform: uppercase;
   }
   body.flash .date { color: #5a5a63; }
   body.flash .date .week { color: #2a2a2f; }
@@ -232,7 +233,7 @@
     timeZone: 'Asia/Tokyo',
     year: 'numeric', month: '2-digit', day: '2-digit'
   });
-  const tokyoWeekFmt = new Intl.DateTimeFormat('ja-JP', {
+  const tokyoWeekFmt = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Tokyo', weekday: 'short'
   });
   function tokyoParts() {
