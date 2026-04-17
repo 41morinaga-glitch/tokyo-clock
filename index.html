@@ -230,9 +230,14 @@
   </div>
 
 <script>
-  const S = { active: 'h', blink: 'on', interval: 3, sound: 'beep' };
+  const S = { activeIdx: 0, blink: 'on', interval: 3, sound: 'beep' };
   try { Object.assign(S, JSON.parse(localStorage.getItem('tokyoClock') || '{}')); } catch {}
   if (S.sound !== 'beep' && S.sound !== 'silent') S.sound = 'beep';
+  const cycle = ['h', 'm', 's', 'm'];
+  if (typeof S.activeIdx !== 'number' || S.activeIdx < 0 || S.activeIdx >= cycle.length) {
+    S.activeIdx = Math.max(0, cycle.indexOf(S.active));
+  }
+  S.active = cycle[S.activeIdx];
   const save = () => localStorage.setItem('tokyoClock', JSON.stringify(S));
 
   const tokyoFmt = new Intl.DateTimeFormat('en-GB', {
@@ -317,8 +322,8 @@
   document.body.addEventListener('click', (e) => {
     if (suppressClick) { suppressClick = false; return; }
     if (e.target.closest('.settings-btn') || e.target.closest('.panel') || e.target.closest('.backdrop')) return;
-    const order = ['h', 'm', 's'];
-    S.active = order[(order.indexOf(S.active) + 1) % 3];
+    S.activeIdx = (S.activeIdx + 1) % cycle.length;
+    S.active = cycle[S.activeIdx];
     updateActive();
     save();
     unlockAudio();
