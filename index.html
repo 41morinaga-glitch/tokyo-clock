@@ -25,7 +25,7 @@
   .clock {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
-    font-weight: 200;
+    font-weight: 350;
     display: flex;
     align-items: baseline;
     justify-content: center;
@@ -150,18 +150,28 @@
   }
   .date {
     font-variant-numeric: tabular-nums;
-    font-size: clamp(11px, 2vmin, 18px);
-    color: #5a5a63;
+    font-size: clamp(13px, 2.4vmin, 22px);
+    color: #7a7a83;
     letter-spacing: 0.22em;
-    font-weight: 300;
+    font-weight: 400;
     transition: color 220ms ease;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6em;
   }
-  body.flash .date { color: #7a7a83; }
+  .date .week {
+    font-size: clamp(18px, 3.6vmin, 32px);
+    letter-spacing: 0;
+    font-weight: 500;
+    color: #a8a8b0;
+  }
+  body.flash .date { color: #5a5a63; }
+  body.flash .date .week { color: #2a2a2f; }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="date" id="date">　</div>
+    <div class="date"><span id="dateYmd">　</span><span class="week" id="dateWeek"></span></div>
     <div class="clock" id="clock">
       <span class="part active" id="h">00</span>
       <span class="sep">:</span>
@@ -235,13 +245,17 @@
   }
   function tokyoDateStr() {
     const now = new Date();
-    return tokyoDateFmt.format(now).replace(/-/g, '.') + ' ' + tokyoWeekFmt.format(now);
+    return {
+      ymd: tokyoDateFmt.format(now).replace(/-/g, '.'),
+      week: tokyoWeekFmt.format(now)
+    };
   }
 
   const hEl = document.getElementById('h');
   const mEl = document.getElementById('m');
   const sEl = document.getElementById('s');
-  const dateEl = document.getElementById('date');
+  const dateYmdEl = document.getElementById('dateYmd');
+  const dateWeekEl = document.getElementById('dateWeek');
   const marketDot = document.getElementById('marketDot');
 
   let lastMinute = null;
@@ -259,7 +273,12 @@
     sEl.textContent = t.second;
 
     const d = tokyoDateStr();
-    if (d !== lastDateStr) { dateEl.textContent = d; lastDateStr = d; }
+    const key = d.ymd + d.week;
+    if (key !== lastDateStr) {
+      dateYmdEl.textContent = d.ymd;
+      dateWeekEl.textContent = d.week;
+      lastDateStr = key;
+    }
 
     const h = +t.hour, m = +t.minute;
     const open = isMarketOpen(h, m);
