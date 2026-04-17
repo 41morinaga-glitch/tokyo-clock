@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>東京時計</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: #0e0e10;
+    color: #f2f2f2;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 80ms ease, color 80ms ease;
+  }
+  body.flash { background: #f2f2f2; color: #0e0e10; }
+
+  .clock {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    font-weight: 200;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-wrap: nowrap;
+    cursor: pointer;
+    gap: 0.04em;
+    padding: clamp(12px, 4vmin, 40px);
+    width: 100%;
+    max-width: 100vw;
+  }
+  .part, .sep {
+    font-size: clamp(20px, 9vmin, 90px);
+    color: #5a5a63;
+    line-height: 1;
+    transition: font-size 220ms cubic-bezier(.22,.61,.36,1), color 220ms ease;
+  }
+  .part.active {
+    font-size: clamp(80px, 34vmin, 360px);
+    color: #f2f2f2;
+  }
+  body.flash .part { color: #8a8a8a; }
+  body.flash .part.active { color: #0e0e10; }
+  body.flash .sep { color: #8a8a8a; }
+
+  .settings-btn {
+    position: fixed;
+    top: max(14px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+    width: 40px; height: 40px;
+    background: transparent;
+    border: none;
+    color: #6a6a73;
+    font-size: 22px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: color 150ms ease, background 150ms ease;
+  }
+  .settings-btn:hover { color: #f2f2f2; background: rgba(255,255,255,0.05); }
+
+  .panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 320px; max-width: 90vw;
+    background: #17171b;
+    border-left: 1px solid #26262c;
+    padding: 24px 24px calc(24px + env(safe-area-inset-bottom));
+    transform: translateX(100%);
+    transition: transform 260ms cubic-bezier(.22,.61,.36,1);
+    overflow-y: auto;
+    z-index: 10;
+  }
+  @media (max-width: 380px) {
+    .panel { padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); }
+    .row { margin-bottom: 16px; }
+    .group button { padding: 9px 6px; font-size: 12px; }
+  }
+  .panel.open { transform: translateX(0); }
+  .panel h2 {
+    font-size: 11px; font-weight: 600; color: #8a8a93;
+    margin-bottom: 20px; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .row { margin-bottom: 22px; }
+  .row label {
+    display: block; font-size: 12px; color: #a8a8b0;
+    margin-bottom: 8px; letter-spacing: 0.03em;
+  }
+  .group { display: flex; gap: 6px; }
+  .group button {
+    flex: 1;
+    background: #1e1e24;
+    border: 1px solid #2a2a32;
+    color: #a8a8b0;
+    padding: 11px 8px;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 120ms ease;
+    font-family: inherit;
+  }
+  .group button:hover { border-color: #3a3a42; color: #e0e0e6; }
+  .group button.on {
+    background: #f2f2f2;
+    border-color: #f2f2f2;
+    color: #0e0e10;
+    font-weight: 500;
+  }
+  .close {
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 32px; height: 32px;
+    background: none; border: none;
+    color: #8a8a93; font-size: 22px; cursor: pointer;
+    border-radius: 50%;
+  }
+  .close:hover { color: #f2f2f2; }
+  .status {
+    position: fixed;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    left: 0; right: 0;
+    font-size: 10px;
+    color: #4a4a53;
+    text-align: center;
+    letter-spacing: 0.2em;
+    pointer-events: none;
+  }
+  .market-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4a4a53;
+    margin-right: 6px;
+    vertical-align: middle;
+    transition: background 200ms ease;
+  }
+  .market-dot.live { background: #4ade80; }
+
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(6px, 1.5vmin, 14px);
+  }
+  .date {
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(11px, 2vmin, 18px);
+    color: #5a5a63;
+    letter-spacing: 0.22em;
+    font-weight: 300;
+    transition: color 220ms ease;
+  }
+  body.flash .date { color: #7a7a83; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="date" id="date">　</div>
+    <div class="clock" id="clock">
+      <span class="part active" id="h">00</span>
+      <span class="sep">:</span>
+      <span class="part" id="m">00</span>
+      <span class="sep">:</span>
+      <span class="part" id="s">00</span>
+    </div>
+  </div>
+
+  <button class="settings-btn" id="openSettings" aria-label="設定">⚙</button>
+
+  <div class="panel" id="panel" role="dialog" aria-label="設定">
+    <button class="close" id="closeSettings" aria-label="閉じる">×</button>
+    <h2>設定</h2>
+
+    <div class="row">
+      <label>点滅</label>
+      <div class="group" data-key="blink">
+        <button data-v="on">オン</button>
+        <button data-v="off">オフ</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <label>通知音</label>
+      <div class="group" data-key="sound">
+        <button data-v="beep">ピピッ</button>
+        <button data-v="silent">無音</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <label>間隔（市場時間 9:00–15:30）</label>
+      <div class="group" data-key="interval">
+        <button data-v="1">1分</button>
+        <button data-v="3">3分</button>
+        <button data-v="5">5分</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="status">
+    <span class="market-dot" id="marketDot"></span>TOKYO / JST
+  </div>
+
+<script>
+  const S = { active: 'h', blink: 'on', interval: 3, sound: 'beep' };
+  try { Object.assign(S, JSON.parse(localStorage.getItem('tokyoClock') || '{}')); } catch {}
+  if (S.sound !== 'beep' && S.sound !== 'silent') S.sound = 'beep';
+  const save = () => localStorage.setItem('tokyoClock', JSON.stringify(S));
+
+  const tokyoFmt = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Tokyo',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false
+  });
+  const tokyoDateFmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric', month: '2-digit', day: '2-digit'
+  });
+  const tokyoWeekFmt = new Intl.DateTimeFormat('ja-JP', {
+    timeZone: 'Asia/Tokyo', weekday: 'short'
+  });
+  function tokyoParts() {
+    const out = {};
+    for (const p of tokyoFmt.formatToParts(new Date())) {
+      if (p.type !== 'literal') out[p.type] = p.value;
+    }
+    if (out.hour === '24') out.hour = '00';
+    return out;
+  }
+  function tokyoDateStr() {
+    const now = new Date();
+    return tokyoDateFmt.format(now).replace(/-/g, '.') + ' ' + tokyoWeekFmt.format(now);
+  }
+
+  const hEl = document.getElementById('h');
+  const mEl = document.getElementById('m');
+  const sEl = document.getElementById('s');
+  const dateEl = document.getElementById('date');
+  const marketDot = document.getElementById('marketDot');
+
+  let lastMinute = null;
+  let lastDateStr = '';
+
+  function isMarketOpen(h, m) {
+    const t = h * 60 + m;
+    return t >= 540 && t <= 930; // 9:00 - 15:30
+  }
+
+  function render() {
+    const t = tokyoParts();
+    hEl.textContent = t.hour;
+    mEl.textContent = t.minute;
+    sEl.textContent = t.second;
+
+    const d = tokyoDateStr();
+    if (d !== lastDateStr) { dateEl.textContent = d; lastDateStr = d; }
+
+    const h = +t.hour, m = +t.minute;
+    const open = isMarketOpen(h, m);
+    marketDot.classList.toggle('live', open);
+
+    if (lastMinute === null) {
+      lastMinute = m;
+    } else if (m !== lastMinute) {
+      lastMinute = m;
+      if (open && m % S.interval === 0) {
+        if (S.blink === 'on') doBlink();
+        if (S.sound === 'beep') playBeep();
+      }
+    }
+  }
+
+  function updateActive() {
+    [hEl, mEl, sEl].forEach(el => el.classList.remove('active'));
+    document.getElementById(S.active).classList.add('active');
+  }
+
+  // Tap anywhere (outside settings) to cycle
+  document.body.addEventListener('click', (e) => {
+    if (e.target.closest('.settings-btn') || e.target.closest('.panel')) return;
+    const order = ['h', 'm', 's'];
+    S.active = order[(order.indexOf(S.active) + 1) % 3];
+    updateActive();
+    save();
+    unlockAudio();
+  });
+
+  // Audio
+  let ctx = null;
+  function unlockAudio() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+  }
+  function playBeep() {
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    [0, 0.13].forEach(off => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 2100;
+      g.gain.setValueAtTime(0, now + off);
+      g.gain.linearRampToValueAtTime(0.18, now + off + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + off + 0.09);
+      osc.connect(g).connect(ctx.destination);
+      osc.start(now + off); osc.stop(now + off + 0.1);
+    });
+  }
+  function doBlink() {
+    document.body.classList.add('flash');
+    setTimeout(() => document.body.classList.remove('flash'), 140);
+  }
+
+  // Settings panel
+  const panel = document.getElementById('panel');
+  document.getElementById('openSettings').addEventListener('click', (e) => {
+    e.stopPropagation();
+    panel.classList.add('open');
+    unlockAudio();
+  });
+  document.getElementById('closeSettings').addEventListener('click', () => {
+    panel.classList.remove('open');
+  });
+
+  function bindGroups() {
+    document.querySelectorAll('.group').forEach(group => {
+      const key = group.dataset.key;
+      const parse = key === 'interval' ? v => parseInt(v, 10) : v => v;
+      const paint = () => group.querySelectorAll('button').forEach(b => {
+        b.classList.toggle('on', b.dataset.v == S[key]);
+      });
+      group.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          S[key] = parse(btn.dataset.v);
+          paint(); save();
+        });
+      });
+      paint();
+    });
+  }
+
+  bindGroups();
+  updateActive();
+  render();
+  setInterval(render, 200);
+</script>
+</body>
+</html>
