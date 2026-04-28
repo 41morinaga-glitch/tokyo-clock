@@ -543,11 +543,7 @@
   setInterval(render, 200);
 
   // ===== Nikkei 225 (^N225) =====
-  const NK_TARGET = 'https://query1.finance.yahoo.com/v8/finance/chart/%5EN225?interval=1m&range=1d';
-  const NK_PROXIES = [
-    u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
-    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-  ];
+  const NK_ENDPOINT = 'https://nikkei-proxy.41morinaga.workers.dev/';
   const nkEl = document.getElementById('nikkei');
   const nkPriceEl = document.getElementById('nkPrice');
   const nkChangeEl = document.getElementById('nkChange');
@@ -556,19 +552,13 @@
   let nkLast = null;
 
   async function nkFetch() {
-    let lastErr;
-    for (const wrap of NK_PROXIES) {
-      try {
-        const r = await fetch(wrap(NK_TARGET), { cache: 'no-store' });
-        if (!r.ok) throw new Error('http ' + r.status);
-        const j = await r.json();
-        const meta = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
-        if (!meta || typeof meta.regularMarketPrice !== 'number') throw new Error('bad data');
-        const prev = (typeof meta.chartPreviousClose === 'number') ? meta.chartPreviousClose : meta.previousClose;
-        return { price: meta.regularMarketPrice, prev };
-      } catch (e) { lastErr = e; }
-    }
-    throw lastErr;
+    const r = await fetch(NK_ENDPOINT, { cache: 'no-store' });
+    if (!r.ok) throw new Error('http ' + r.status);
+    const j = await r.json();
+    const meta = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
+    if (!meta || typeof meta.regularMarketPrice !== 'number') throw new Error('bad data');
+    const prev = (typeof meta.chartPreviousClose === 'number') ? meta.chartPreviousClose : meta.previousClose;
+    return { price: meta.regularMarketPrice, prev };
   }
 
   function nkApply(d) {
@@ -602,8 +592,14 @@
       }
     }
   }
-  nkRefresh();
-  setInterval(nkRefresh, 5000);
+  function nkMarketOpenNow() {
+    const t = tokyoParts();
+    const d = tokyoDateStr();
+    if (!isMarketDay(d.week, d.raw)) return false;
+    return isMarketOpen(+t.hour, +t.minute);
+  }
+  nkRefresh(); // always fetch once on load so closed-hours show last close
+  setInterval(() => { if (nkMarketOpenNow()) nkRefresh(); }, 2000);
 </script>
 </body>
 </html>
