@@ -16,7 +16,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
-    background: linear-gradient(135deg, #0a0a0e 0%, #1a1a24 100%);
+    background: linear-gradient(135deg, var(--bg-from, #0a0a0e) 0%, var(--bg-to, #1a1a24) 100%);
     color: #f2f2f2;
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
     display: flex;
@@ -28,10 +28,6 @@
     -webkit-tap-highlight-color: transparent;
     transition: background 80ms ease, color 80ms ease;
   }
-  body.up5 { background: linear-gradient(135deg, #200408 0%, #b01018 100%); }
-  body.up1 { background: linear-gradient(135deg, #1c1006 0%, #c25018 100%); }
-  body.dn1 { background: linear-gradient(135deg, #0c1808 0%, #5a8e1a 100%); }
-  body.dn5 { background: linear-gradient(135deg, #06102a 0%, #1850c0 100%); }
   body.flash { background: #f2f2f2; color: #0e0e10; }
 
   .clock {
@@ -544,6 +540,24 @@
 
   // ===== Nikkei 225 (^N225) =====
   const NK_ENDPOINT = 'https://nikkei-proxy.41morinaga.workers.dev/';
+  const NK_GRAD = {
+    up: { from0: [14, 8, 8],   from1: [32, 4, 8],    to0: [44, 10, 16], to1: [176, 16, 24] },
+    dn: { from0: [8, 10, 16],  from1: [6, 16, 42],   to0: [16, 24, 64], to1: [24, 80, 192] },
+  };
+  const nkLerp = (a, b, t) => Math.round(a + (b - a) * t);
+  const nkMix = (c0, c1, t) => `rgb(${nkLerp(c0[0],c1[0],t)},${nkLerp(c0[1],c1[1],t)},${nkLerp(c0[2],c1[2],t)})`;
+  function nkApplyGradient(pct) {
+    const body = document.body;
+    if (Math.abs(pct) < 1) {
+      body.style.removeProperty('--bg-from');
+      body.style.removeProperty('--bg-to');
+      return;
+    }
+    const intensity = Math.min(Math.abs(pct) / 5, 1);
+    const p = pct >= 1 ? NK_GRAD.up : NK_GRAD.dn;
+    body.style.setProperty('--bg-from', nkMix(p.from0, p.from1, intensity));
+    body.style.setProperty('--bg-to',   nkMix(p.to0,   p.to1,   intensity));
+  }
   const nkEl = document.getElementById('nikkei');
   const nkPriceEl = document.getElementById('nkPrice');
   const nkChangeEl = document.getElementById('nkChange');
@@ -571,11 +585,7 @@
     nkEl.classList.remove('err', 'up', 'dn');
     nkEl.classList.add(change >= 0 ? 'up' : 'dn');
 
-    document.body.classList.remove('up1', 'up5', 'dn1', 'dn5');
-    if (pct >= 5) document.body.classList.add('up5');
-    else if (pct >= 1) document.body.classList.add('up1');
-    else if (pct <= -5) document.body.classList.add('dn5');
-    else if (pct <= -1) document.body.classList.add('dn1');
+    nkApplyGradient(pct);
   }
 
   async function nkRefresh() {
