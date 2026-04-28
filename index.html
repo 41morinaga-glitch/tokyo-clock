@@ -237,6 +237,21 @@
   body.flash .nikkei .price,
   body.flash .nikkei .change,
   body.flash .nikkei .pct { color: #1a1a20; }
+
+  .closing-status {
+    font-size: clamp(10px, 1.7vmin, 14px);
+    color: #f59e0b;
+    letter-spacing: 0.22em;
+    font-weight: 600;
+    margin-top: clamp(4px, 1vmin, 10px);
+    animation: closingPulse 1.4s ease-in-out infinite;
+  }
+  .closing-status[hidden] { display: none; }
+  @keyframes closingPulse {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 1; }
+  }
+  body.flash .closing-status { color: #b45309; }
 </style>
 </head>
 <body>
@@ -256,6 +271,7 @@
       <span class="change" id="nkChange"></span>
       <span class="pct" id="nkPct"></span>
     </div>
+    <div class="closing-status" id="closingStatus" hidden></div>
   </div>
 
   <button class="settings-btn" id="openSettings" aria-label="設定">⚙</button>
@@ -637,6 +653,28 @@
     if (!isMarketDay(d.week, d.raw)) return false;
     return isMarketOpen(+t.hour, +t.minute);
   }
+  const closingStatusEl = document.getElementById('closingStatus');
+  function updateClosingStatus() {
+    const t = tokyoParts();
+    const d = tokyoDateStr();
+    if (!isMarketDay(d.week, d.raw)) {
+      if (!closingStatusEl.hidden) closingStatusEl.hidden = true;
+      return;
+    }
+    const sec = (+t.hour) * 3600 + (+t.minute) * 60 + (+t.second);
+    const T = (h, m, s) => h * 3600 + m * 60 + s;
+    let label = null;
+    if (sec >= T(15, 29, 0) && sec < T(15, 30, 30)) label = '引け処理中';
+    else if (sec >= T(15, 30, 30) && sec < T(15, 35, 0)) label = '確定中';
+    if (label) {
+      if (closingStatusEl.textContent !== label) closingStatusEl.textContent = label;
+      if (closingStatusEl.hidden) closingStatusEl.hidden = false;
+    } else if (!closingStatusEl.hidden) {
+      closingStatusEl.hidden = true;
+    }
+  }
+  setInterval(updateClosingStatus, 500);
+  updateClosingStatus();
   nkRefresh(); // always fetch once on load so closed-hours show last close
   setInterval(() => { if (nkMarketOpenNow()) nkRefresh(); }, 2000);
 </script>
