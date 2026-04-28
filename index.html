@@ -289,6 +289,14 @@
         <button data-v="5">5分</button>
       </div>
     </div>
+
+    <div class="row">
+      <label>日経 音声通知（±1%ごと）</label>
+      <div class="group" data-key="voice">
+        <button data-v="on">オン</button>
+        <button data-v="off">オフ</button>
+      </div>
+    </div>
   </div>
 
   <div class="status">
@@ -296,7 +304,7 @@
   </div>
 
 <script>
-  const S = { activeIdx: 0, blink: 'on', interval: 3, sound: 'beep' };
+  const S = { activeIdx: 0, blink: 'on', interval: 3, sound: 'beep', voice: 'off' };
   try { Object.assign(S, JSON.parse(localStorage.getItem('tokyoClock') || '{}')); } catch {}
   if (S.sound !== 'beep' && S.sound !== 'silent') S.sound = 'beep';
   const cycle = ['h', 'm', 's', 'm'];
@@ -547,6 +555,25 @@
   };
   const nkLerp = (a, b, t) => Math.round(a + (b - a) * t);
   const nkMix = (c0, c1, t) => `rgb(${nkLerp(c0[0],c1[0],t)},${nkLerp(c0[1],c1[1],t)},${nkLerp(c0[2],c1[2],t)})`;
+  let nkLastBand = null;
+  function nkSpeak(level) {
+    if (!('speechSynthesis' in window)) return;
+    const sign = level > 0 ? 'プラス' : 'マイナス';
+    const u = new SpeechSynthesisUtterance(`日経 ${sign} ${Math.abs(level)} パーセント`);
+    u.lang = 'ja-JP';
+    u.rate = 1.0;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+  function nkCheckBand(pct) {
+    if (!isFinite(pct)) return;
+    const band = Math.trunc(pct);
+    if (nkLastBand === null) { nkLastBand = band; return; }
+    if (band !== nkLastBand) {
+      if (S.voice === 'on' && band !== 0) nkSpeak(band);
+      nkLastBand = band;
+    }
+  }
   function nkApplyGradient(pct) {
     const body = document.body;
     if (!isFinite(pct) || pct === 0) {
@@ -587,6 +614,7 @@
     nkEl.classList.add(change >= 0 ? 'up' : 'dn');
 
     nkApplyGradient(pct);
+    nkCheckBand(pct);
   }
 
   async function nkRefresh() {
