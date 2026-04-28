@@ -29,8 +29,8 @@
     transition: background 80ms ease, color 80ms ease;
   }
   body.up5 { background: linear-gradient(135deg, #200408 0%, #b01018 100%); }
-  body.up3 { background: linear-gradient(135deg, #1c1006 0%, #c25018 100%); }
-  body.dn3 { background: linear-gradient(135deg, #0c1808 0%, #5a8e1a 100%); }
+  body.up1 { background: linear-gradient(135deg, #1c1006 0%, #c25018 100%); }
+  body.dn1 { background: linear-gradient(135deg, #0c1808 0%, #5a8e1a 100%); }
   body.dn5 { background: linear-gradient(135deg, #06102a 0%, #1850c0 100%); }
   body.flash { background: #f2f2f2; color: #0e0e10; }
 
@@ -571,11 +571,11 @@
     nkEl.classList.remove('err', 'up', 'dn');
     nkEl.classList.add(change >= 0 ? 'up' : 'dn');
 
-    document.body.classList.remove('up3', 'up5', 'dn3', 'dn5');
+    document.body.classList.remove('up1', 'up5', 'dn1', 'dn5');
     if (pct >= 5) document.body.classList.add('up5');
-    else if (pct >= 3) document.body.classList.add('up3');
+    else if (pct >= 1) document.body.classList.add('up1');
     else if (pct <= -5) document.body.classList.add('dn5');
-    else if (pct <= -3) document.body.classList.add('dn3');
+    else if (pct <= -1) document.body.classList.add('dn1');
   }
 
   async function nkRefresh() {
