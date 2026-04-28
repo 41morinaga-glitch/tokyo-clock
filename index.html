@@ -16,7 +16,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
-    background: #0e0e10;
+    background: linear-gradient(135deg, #0a0a0e 0%, #1a1a24 100%);
     color: #f2f2f2;
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
     display: flex;
@@ -28,6 +28,10 @@
     -webkit-tap-highlight-color: transparent;
     transition: background 80ms ease, color 80ms ease;
   }
+  body.up5 { background: linear-gradient(135deg, #200408 0%, #b01018 100%); }
+  body.up3 { background: linear-gradient(135deg, #1c1006 0%, #c25018 100%); }
+  body.dn3 { background: linear-gradient(135deg, #0c1808 0%, #5a8e1a 100%); }
+  body.dn5 { background: linear-gradient(135deg, #06102a 0%, #1850c0 100%); }
   body.flash { background: #f2f2f2; color: #0e0e10; }
 
   .clock {
@@ -197,6 +201,46 @@
   }
   .countdown[hidden] { display: none; }
   body.flash .countdown { color: #0e0e10; }
+
+  .nikkei {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15em;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    letter-spacing: 0.04em;
+    margin-top: clamp(2px, 0.8vmin, 10px);
+    max-width: 96vw;
+    line-height: 1.15;
+  }
+  .nikkei .label {
+    font-size: clamp(9px, 1.4vmin, 11px);
+    color: #8a8a93;
+    letter-spacing: 0.22em;
+    font-weight: 600;
+  }
+  .nikkei .price {
+    font-size: clamp(14px, 2.8vmin, 22px);
+    color: #f2f2f2;
+    font-weight: 500;
+  }
+  .nikkei .change,
+  .nikkei .pct {
+    font-size: clamp(11px, 2.1vmin, 16px);
+    color: #d8d8e0;
+  }
+  .nikkei.up .change,
+  .nikkei.up .pct { color: #ffb4b4; }
+  .nikkei.dn .change,
+  .nikkei.dn .pct { color: #b4ffb4; }
+  .nikkei.err .price { font-size: clamp(11px, 2vmin, 14px); color: #6a6a73; }
+  .nikkei.err .change,
+  .nikkei.err .pct { display: none; }
+  body.flash .nikkei .label,
+  body.flash .nikkei .price,
+  body.flash .nikkei .change,
+  body.flash .nikkei .pct { color: #1a1a20; }
 </style>
 </head>
 <body>
@@ -209,6 +253,12 @@
       <span class="part" id="m">00</span>
       <span class="sep">:</span>
       <span class="part" id="s">00</span>
+    </div>
+    <div class="nikkei err" id="nikkei">
+      <span class="label">N225</span>
+      <span class="price" id="nkPrice">取得中…</span>
+      <span class="change" id="nkChange"></span>
+      <span class="pct" id="nkPct"></span>
     </div>
   </div>
 
@@ -491,6 +541,69 @@
   updateActive();
   render();
   setInterval(render, 200);
+
+  // ===== Nikkei 225 (^N225) =====
+  const NK_TARGET = 'https://query1.finance.yahoo.com/v8/finance/chart/%5EN225?interval=1m&range=1d';
+  const NK_PROXIES = [
+    u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
+    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+  ];
+  const nkEl = document.getElementById('nikkei');
+  const nkPriceEl = document.getElementById('nkPrice');
+  const nkChangeEl = document.getElementById('nkChange');
+  const nkPctEl = document.getElementById('nkPct');
+  const nkFmt = new Intl.NumberFormat('ja-JP', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  let nkLast = null;
+
+  async function nkFetch() {
+    let lastErr;
+    for (const wrap of NK_PROXIES) {
+      try {
+        const r = await fetch(wrap(NK_TARGET), { cache: 'no-store' });
+        if (!r.ok) throw new Error('http ' + r.status);
+        const j = await r.json();
+        const meta = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
+        if (!meta || typeof meta.regularMarketPrice !== 'number') throw new Error('bad data');
+        const prev = (typeof meta.chartPreviousClose === 'number') ? meta.chartPreviousClose : meta.previousClose;
+        return { price: meta.regularMarketPrice, prev };
+      } catch (e) { lastErr = e; }
+    }
+    throw lastErr;
+  }
+
+  function nkApply(d) {
+    const change = d.price - d.prev;
+    const pct = (change / d.prev) * 100;
+    nkPriceEl.textContent = nkFmt.format(d.price);
+    const sign = change >= 0 ? '+' : '−';
+    nkChangeEl.textContent = sign + nkFmt.format(Math.abs(change));
+    nkPctEl.textContent = sign + Math.abs(pct).toFixed(2) + '%';
+    nkEl.classList.remove('err', 'up', 'dn');
+    nkEl.classList.add(change >= 0 ? 'up' : 'dn');
+
+    document.body.classList.remove('up3', 'up5', 'dn3', 'dn5');
+    if (pct >= 5) document.body.classList.add('up5');
+    else if (pct >= 3) document.body.classList.add('up3');
+    else if (pct <= -5) document.body.classList.add('dn5');
+    else if (pct <= -3) document.body.classList.add('dn3');
+  }
+
+  async function nkRefresh() {
+    try {
+      const d = await nkFetch();
+      nkLast = d;
+      nkApply(d);
+    } catch (e) {
+      if (!nkLast) {
+        nkEl.classList.add('err');
+        nkPriceEl.textContent = '取得失敗';
+        nkChangeEl.textContent = '';
+        nkPctEl.textContent = '';
+      }
+    }
+  }
+  nkRefresh();
+  setInterval(nkRefresh, 5000);
 </script>
 </body>
 </html>
