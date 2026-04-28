@@ -541,22 +541,23 @@
   // ===== Nikkei 225 (^N225) =====
   const NK_ENDPOINT = 'https://nikkei-proxy.41morinaga.workers.dev/';
   const NK_GRAD = {
-    up: { from0: [14, 8, 8],   from1: [32, 4, 8],    to0: [44, 10, 16], to1: [176, 16, 24] },
-    dn: { from0: [8, 10, 16],  from1: [6, 16, 42],   to0: [16, 24, 64], to1: [24, 80, 192] },
+    base: { from: [10, 10, 14], to: [26, 26, 36] },
+    up:   { from: [32, 4, 8],   to: [176, 16, 24] },
+    dn:   { from: [6, 16, 42],  to: [24, 80, 192] },
   };
   const nkLerp = (a, b, t) => Math.round(a + (b - a) * t);
   const nkMix = (c0, c1, t) => `rgb(${nkLerp(c0[0],c1[0],t)},${nkLerp(c0[1],c1[1],t)},${nkLerp(c0[2],c1[2],t)})`;
   function nkApplyGradient(pct) {
     const body = document.body;
-    if (Math.abs(pct) < 1) {
+    if (!isFinite(pct) || pct === 0) {
       body.style.removeProperty('--bg-from');
       body.style.removeProperty('--bg-to');
       return;
     }
     const intensity = Math.min(Math.abs(pct) / 5, 1);
-    const p = pct >= 1 ? NK_GRAD.up : NK_GRAD.dn;
-    body.style.setProperty('--bg-from', nkMix(p.from0, p.from1, intensity));
-    body.style.setProperty('--bg-to',   nkMix(p.to0,   p.to1,   intensity));
+    const target = pct > 0 ? NK_GRAD.up : NK_GRAD.dn;
+    body.style.setProperty('--bg-from', nkMix(NK_GRAD.base.from, target.from, intensity));
+    body.style.setProperty('--bg-to',   nkMix(NK_GRAD.base.to,   target.to,   intensity));
   }
   const nkEl = document.getElementById('nikkei');
   const nkPriceEl = document.getElementById('nkPrice');
