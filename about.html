@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>hotokei の使い方</title>
+<meta name="description" content="hotokei は時計と日経平均株価を1画面に集約したミニマル・ダッシュボード。機能と使い方の解説。">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T4KTK263GY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-T4KTK263GY');
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #0a0a0e;
+    background: linear-gradient(180deg, #0a0a0e 0%, #14141c 100%);
+    color: #d8d8e0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
+    line-height: 1.75;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: clamp(48px, 8vw, 96px) clamp(22px, 5vw, 40px);
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    margin-bottom: clamp(56px, 9vw, 96px);
+    padding-bottom: clamp(40px, 6vw, 64px);
+    border-bottom: 1px solid #1f1f27;
+  }
+  .hero h1 {
+    font-size: clamp(56px, 13vw, 96px);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #ffffff 0%, #6a6a73 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero .tagline {
+    font-size: clamp(14px, 2.8vw, 18px);
+    color: #7a7a83;
+    letter-spacing: 0.12em;
+  }
+  .hero .gradient-strip {
+    margin-top: 32px;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg,
+      #1850c0 0%,
+      #5a8e1a 25%,
+      #1a1a24 50%,
+      #c25018 75%,
+      #b01018 100%);
+    opacity: 0.7;
+  }
+  .hero .gradient-labels {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #5a5a63;
+    letter-spacing: 0.1em;
+  }
+
+  /* Sections */
+  section { margin-bottom: clamp(48px, 7vw, 72px); }
+  h2 {
+    font-size: clamp(22px, 4.5vw, 30px);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-bottom: 24px;
+    color: #f2f2f2;
+    border-left: 3px solid #4ade80;
+    padding-left: 14px;
+    line-height: 1.3;
+  }
+
+  /* Feature cards */
+  .feature {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid #1f1f27;
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    transition: border-color 200ms ease, background 200ms ease;
+  }
+  .feature:hover {
+    border-color: #2a2a34;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .feature h3 {
+    font-size: clamp(15px, 3vw, 18px);
+    font-weight: 500;
+    color: #f2f2f2;
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+  .feature p {
+    font-size: clamp(13px, 2.5vw, 15px);
+    color: #b0b0bc;
+    margin: 0;
+  }
+  .feature p + p { margin-top: 6px; }
+
+  ul {
+    padding-left: 8px;
+    list-style: none;
+  }
+  li {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 10px;
+    font-size: clamp(13px, 2.5vw, 15px);
+    color: #b0b0bc;
+  }
+  li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #4ade80;
+    font-size: 0.9em;
+  }
+  li strong { color: #e8e8ee; font-weight: 500; }
+
+  p { font-size: clamp(13px, 2.6vw, 16px); color: #b0b0bc; }
+
+  code {
+    background: rgba(255, 255, 255, 0.07);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: "SF Mono", Monaco, "Roboto Mono", monospace;
+    font-size: 0.9em;
+    color: #e0e0e6;
+  }
+
+  .accent-up { color: #ffb4b4; }
+  .accent-dn { color: #b4ffb4; }
+  .accent-warn { color: #f59e0b; }
+
+  .disclaimer {
+    background: rgba(245, 158, 11, 0.07);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-left: 3px solid #f59e0b;
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin: 32px 0;
+  }
+  .disclaimer h3 {
+    color: #f59e0b;
+    font-size: clamp(15px, 3vw, 18px);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .disclaimer p {
+    color: #d4ad6a;
+    font-size: clamp(13px, 2.5vw, 15px);
+    margin-bottom: 8px;
+  }
+  .disclaimer p:last-child { margin-bottom: 0; }
+  .disclaimer strong { color: #f5cf91; }
+
+  .back-cta {
+    text-align: center;
+    margin-top: clamp(48px, 8vw, 72px);
+  }
+  .back-link {
+    display: inline-block;
+    padding: 14px 36px;
+    background: #1e1e24;
+    border: 1px solid #2a2a32;
+    color: #f2f2f2;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: clamp(13px, 2.6vw, 15px);
+    letter-spacing: 0.05em;
+    transition: all 150ms ease;
+  }
+  .back-link:hover {
+    background: #2a2a32;
+    border-color: #3a3a42;
+    transform: translateY(-1px);
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: clamp(40px, 6vw, 64px);
+    padding-top: clamp(28px, 5vw, 40px);
+    border-top: 1px solid #1f1f27;
+    color: #45454e;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <h1>hotokei</h1>
+      <p class="tagline">時計 × 日経平均 — ミニマル・ダッシュボード</p>
+      <div class="gradient-strip" aria-hidden="true"></div>
+      <div class="gradient-labels" aria-hidden="true">
+        <span>−5%</span><span>−1%</span><span>0</span><span>+1%</span><span>+5%</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>hotokei とは</h2>
+      <p>大きな時計と日経平均を1画面に集約したシンプルなダッシュボードです。サブディスプレイや常時表示タブにそのまま置いておき、視界の隅で <strong>「時刻」と「相場の温度」</strong> を同時に掴めます。</p>
+    </section>
+
+    <section>
+      <h2>主な機能</h2>
+
+      <div class="feature">
+        <h3>大きな時計</h3>
+        <p>時 / 分 / 秒のうち1つを大きく強調表示。タップで強調する桁が <code>時 → 分 → 秒 → 分</code> の順に切り替わります。</p>
+      </div>
+
+      <div class="feature">
+        <h3>日経平均（リアルタイム近く）</h3>
+        <p>東京市場 9:00〜15:30 の間、<strong>2秒間隔</strong>で日経平均（^N225）を取得し、現在値・前日比・騰落率を3行で表示。市場時間外は前回値（多くの場合 当日終値）を固定表示します。</p>
+      </div>
+
+      <div class="feature">
+        <h3>背景グラデーションで「相場の温度」</h3>
+        <p>前日比%に応じて背景が <strong>連続的に</strong> 変化します。</p>
+        <p><span class="accent-up">プラス側 → 0% は暗色、+5%以上で赤最大（赤が濃くなるほど強い上昇）</span></p>
+        <p><span class="accent-dn">マイナス側 → 0% は暗色、−5%以下で青最大（青が濃くなるほど強い下落）</span></p>
+      </div>
+
+      <div class="feature">
+        <h3>音声通知（±1%バンド毎）</h3>
+        <p>整数1%のバンド（+1, +2, …, +5, −1, −2, …, −5）を跨ぐ瞬間に音声で読み上げ。例: 0.8% → 1.2% で <code>日経 プラス1パーセント</code>。</p>
+        <p>設定 → 「日経 音声通知」で ON/OFF（デフォルト OFF）。離席中の大きな変動察知に便利。</p>
+      </div>
+
+      <div class="feature">
+        <h3>引け処理中 / 確定中の表示</h3>
+        <p>引け前後の値が信用しにくい時間帯にオレンジで点滅警告。</p>
+        <p><span class="accent-warn">15:29:00 〜 15:30:29 → 引け処理中</span></p>
+        <p><span class="accent-warn">15:30:30 〜 15:34:59 → 確定中</span></p>
+      </div>
+
+      <div class="feature">
+        <h3>寄り付き10秒前カウントダウン</h3>
+        <p>9:00 寄り付きの10秒前から「開始まで X秒」表示 + ティック音で寄り意識を喚起。</p>
+      </div>
+
+      <div class="feature">
+        <h3>市場開閉ドット</h3>
+        <p>画面下「TOKYO / JST」左の点。<span style="color:#4ade80">緑</span> = 開場中、グレー = 閉場中。営業日（祝日除外）のみ点灯。</p>
+      </div>
+
+      <div class="feature">
+        <h3>定期点滅（オプション）</h3>
+        <p>市場時間中、設定間隔（1/3/5分）ごとに背景が一瞬白く反転。時間経過の感覚を保てます。</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>操作方法</h2>
+      <ul>
+        <li><strong>画面タップ</strong> — 強調する桁を切り替え</li>
+        <li><strong>左スワイプ</strong> — 設定パネルを開く</li>
+        <li><strong>右スワイプ</strong> — 設定パネルを閉じる</li>
+        <li><strong>右下の ⚙ アイコン</strong> — 設定パネルを開く</li>
+        <li><strong>Esc キー</strong> — 設定パネルを閉じる</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>設定項目</h2>
+      <ul>
+        <li><strong>点滅</strong> — 市場時間中の背景フラッシュ（ON/OFF）</li>
+        <li><strong>通知音</strong> — 点滅／カウントダウンの音（ピピッ／無音）</li>
+        <li><strong>間隔</strong> — 点滅と音の間隔（1分／3分／5分）</li>
+        <li><strong>日経 音声通知</strong> — ±1%跨ぎ時の読み上げ（ON/OFF）</li>
+      </ul>
+      <p style="margin-top:12px;">設定は <code>localStorage</code> に保存され、次回アクセス時も保持されます。</p>
+    </section>
+
+    <section>
+      <h2>こんな使い方がおすすめ</h2>
+      <ul>
+        <li>サブディスプレイの常時表示で「相場の温度」を背景色で感じる</li>
+        <li>離席中に音声通知で大きな変動を察知</li>
+        <li>ザラ場中の時間意識を時計と一緒に保つ</li>
+        <li>朝 8:59 から 9:00 寄り付きをカウントダウンで体験</li>
+        <li>引け間際の判断タイミングを「引け処理中」表示で把握</li>
+      </ul>
+    </section>
+
+    <div class="disclaimer">
+      <h3>⚠ 重要な注意事項</h3>
+      <p>表示している日経平均は <strong>Yahoo Finance</strong> 経由で取得しており、<strong>1〜数十秒の遅延</strong>があります。</p>
+      <p><strong>絶対にトレード判断には使わないでください。</strong> 取引判断には必ず証券会社（SBI、楽天、auカブコム等）のリアルタイム表示を使用してください。</p>
+      <p>特に <strong>引け前後（15:25〜15:35）</strong> は SBI 等のリアルタイム配信と数百円ズレることがあります。</p>
+    </div>
+
+    <div class="back-cta">
+      <a href="index.html" class="back-link">← hotokei に戻る</a>
+    </div>
+
+    <div class="footer">HOTOKEI · TOKYO CLOCK</div>
+  </div>
+</body>
+</html>

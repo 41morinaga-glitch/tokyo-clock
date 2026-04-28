@@ -252,6 +252,25 @@
     50% { opacity: 1; }
   }
   body.flash .closing-status { color: #b45309; }
+
+  .usage-link {
+    display: block;
+    margin-top: 28px;
+    padding: 14px 12px;
+    text-align: center;
+    color: #a8a8b0;
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    border-top: 1px solid #26262c;
+    transition: color 150ms ease, background 150ms ease;
+    border-radius: 0 0 6px 6px;
+  }
+  .usage-link:hover, .usage-link:focus {
+    color: #f2f2f2;
+    background: rgba(255, 255, 255, 0.03);
+    outline: none;
+  }
 </style>
 </head>
 <body>
@@ -313,6 +332,8 @@
         <button data-v="off">オフ</button>
       </div>
     </div>
+
+    <a href="about.html" class="usage-link">hotokei の使い方 →</a>
   </div>
 
   <div class="status">
