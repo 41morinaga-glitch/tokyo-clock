@@ -361,7 +361,14 @@
 
 <script>
   const S = { activeIdx: 0, blink: 'on', interval: 3, sound: 'beep', voice: 'off' };
-  try { Object.assign(S, JSON.parse(localStorage.getItem('tokyoClock') || '{}')); } catch {}
+  const EMBEDDED = (() => { try { return window.self !== window.top; } catch { return true; } })();
+  if (!EMBEDDED) {
+    try { Object.assign(S, JSON.parse(localStorage.getItem('tokyoClock') || '{}')); } catch {}
+  } else {
+    S.sound = 'silent';
+    S.blink = 'off';
+    S.voice = 'off';
+  }
   if (S.sound !== 'beep' && S.sound !== 'silent') S.sound = 'beep';
   const cycle = ['h', 'm', 's', 'm'];
   if (typeof S.activeIdx !== 'number' || S.activeIdx < 0 || S.activeIdx >= cycle.length) {
