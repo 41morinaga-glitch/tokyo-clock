@@ -197,6 +197,26 @@
   }
   .back-link, .back-link:hover { border-bottom: 1px solid #2a2a32; }
 
+  .contact-btn {
+    display: inline-block;
+    padding: 10px 22px;
+    background: #1e1e24;
+    border: 1px solid #2a2a32;
+    color: #f2f2f2;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: clamp(13px, 2.5vw, 14px);
+    letter-spacing: 0.05em;
+    transition: all 150ms ease;
+  }
+  .contact-btn:hover {
+    background: #2a2a32;
+    border-color: #4ade80;
+    transform: translateY(-1px);
+  }
+  .contact-btn, .contact-btn:hover { border-bottom: 1px solid #2a2a32; }
+  .contact-wrap { text-align: center; margin-top: 16px; }
+
   .footer {
     text-align: center;
     margin-top: clamp(40px, 6vw, 64px);
@@ -221,7 +241,7 @@
         <dt>事業者名</dt><dd>株式会社gen</dd>
         <dt>代表者</dt><dd>盛長 伸一</dd>
         <dt>所在地</dt><dd>沖縄県那覇市首里桃原町 2-15-1</dd>
-        <dt>連絡先</dt><dd><a href="mailto:gen@okigen.com">gen@okigen.com</a></dd>
+        <dt>連絡先</dt><dd><a href="https://okigen.com/contact" target="_blank" rel="noopener" class="contact-btn">お問い合わせフォーム →</a></dd>
       </dl>
     </section>
 
@@ -253,7 +273,8 @@
       <p>設定（点滅 ON/OFF、通知音、間隔、音声通知 ON/OFF など）は、お使いのブラウザ内（<code>localStorage</code>）にのみ保存されます。弊社のサーバーには送信されません。</p>
 
       <h3>6. お問い合わせ</h3>
-      <p>当サイトに関するお問い合わせは、<a href="mailto:gen@okigen.com">gen@okigen.com</a> までご連絡ください。</p>
+      <p>当サイトに関するお問い合わせは、下記のお問い合わせフォームよりご連絡ください。</p>
+      <p class="contact-wrap"><a href="https://okigen.com/contact" target="_blank" rel="noopener" class="contact-btn">お問い合わせフォーム →</a></p>
     </section>
 
     <section>
