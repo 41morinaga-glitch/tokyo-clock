@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>hotokei — 時計と日経平均のミニマル・ダッシュボード</title>
-<meta name="description" content="大きな時計と日経平均株価を1画面に集約したミニマル・ダッシュボード。サブディスプレイで時刻と相場の温度を同時に把握できます。">
-<meta name="theme-color" content="#0a0a0e">
+<title>hotokei — 東京市場のための時計</title>
+<meta name="description" content="東京証券取引所のザラ場時間(9:00〜15:30)を体感するためのミニマルな時計。サブディスプレイの片隅に置いておくだけで、市場の時間構造を感じ取れます。">
+<meta name="theme-color" content="#000000">
 <link rel="canonical" href="https://hotokei.com/">
 
 <!-- OpenGraph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="hotokei">
-<meta property="og:title" content="hotokei — 時計と日経平均のミニマル・ダッシュボード">
-<meta property="og:description" content="大きな時計と日経平均株価を1画面に集約。サブディスプレイで時刻と相場の温度を同時に把握できます。">
+<meta property="og:title" content="hotokei — 東京市場のための時計">
+<meta property="og:description" content="東京証券取引所のザラ場時間(9:00〜15:30)を体感するためのミニマルな時計。サブディスプレイの片隅に。">
 <meta property="og:url" content="https://hotokei.com/">
 <meta property="og:locale" content="ja_JP">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="hotokei — 時計と日経平均のミニマル・ダッシュボード">
-<meta name="twitter:description" content="大きな時計と日経平均株価を1画面に集約したミニマル・ダッシュボード。">
+<meta name="twitter:title" content="hotokei — 東京市場のための時計">
+<meta name="twitter:description" content="東京証券取引所のザラ場時間を体感するためのミニマルな時計。">
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-T4KTK263GY"></script>
@@ -33,7 +33,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
-    background: linear-gradient(135deg, var(--bg-from, #0a0a0e) 0%, var(--bg-to, #1a1a24) 100%);
+    background: #000000;
     color: #f2f2f2;
     font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
     display: flex;
@@ -150,6 +150,8 @@
     color: #0e0e10;
     font-weight: 500;
   }
+  .group.multi { flex-wrap: wrap; }
+  .group.multi button { flex: 1 0 calc(33.33% - 4px); }
   .close {
     position: absolute;
     top: 14px; right: 14px;
@@ -215,46 +217,6 @@
   .countdown[hidden] { display: none; }
   body.flash .countdown { color: #0e0e10; }
 
-  .nikkei {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.15em;
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum";
-    letter-spacing: 0.04em;
-    margin-top: clamp(2px, 0.8vmin, 10px);
-    max-width: 96vw;
-    line-height: 1.15;
-  }
-  .nikkei .label {
-    font-size: clamp(9px, 1.4vmin, 11px);
-    color: #8a8a93;
-    letter-spacing: 0.22em;
-    font-weight: 600;
-  }
-  .nikkei .price {
-    font-size: clamp(14px, 2.8vmin, 22px);
-    color: #f2f2f2;
-    font-weight: 500;
-  }
-  .nikkei .change,
-  .nikkei .pct {
-    font-size: clamp(11px, 2.1vmin, 16px);
-    color: #d8d8e0;
-  }
-  .nikkei.up .change,
-  .nikkei.up .pct { color: #ffb4b4; }
-  .nikkei.dn .change,
-  .nikkei.dn .pct { color: #b4ffb4; }
-  .nikkei.err .price { font-size: clamp(11px, 2vmin, 14px); color: #6a6a73; }
-  .nikkei.err .change,
-  .nikkei.err .pct { display: none; }
-  body.flash .nikkei .label,
-  body.flash .nikkei .price,
-  body.flash .nikkei .change,
-  body.flash .nikkei .pct { color: #1a1a20; }
-
   .closing-status {
     font-size: clamp(10px, 1.7vmin, 14px);
     color: #f59e0b;
@@ -269,6 +231,36 @@
     50% { opacity: 1; }
   }
   body.flash .closing-status { color: #b45309; }
+
+  .renewal-notice {
+    position: fixed;
+    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 22px);
+    left: 0; right: 0;
+    font-size: 10px;
+    color: rgba(120, 120, 130, 0.65);
+    text-align: center;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 48px;
+    pointer-events: none;
+    z-index: 4;
+  }
+  .renewal-notice[hidden] { display: none; }
+  .renewal-close {
+    background: none;
+    border: none;
+    color: rgba(120, 120, 130, 0.5);
+    font-size: 13px;
+    cursor: pointer;
+    pointer-events: auto;
+    line-height: 1;
+    padding: 0 2px;
+    transition: color 120ms ease;
+  }
+  .renewal-close:hover { color: rgba(200, 200, 210, 0.8); }
 
   .usage-link {
     display: block;
@@ -302,12 +294,6 @@
       <span class="sep">:</span>
       <span class="part" id="s">00</span>
     </div>
-    <div class="nikkei err" id="nikkei">
-      <span class="label">N225</span>
-      <span class="price" id="nkPrice">取得中…</span>
-      <span class="change" id="nkChange"></span>
-      <span class="pct" id="nkPct"></span>
-    </div>
     <div class="closing-status" id="closingStatus" hidden></div>
   </div>
 
@@ -336,18 +322,13 @@
 
     <div class="row">
       <label>間隔（市場時間 9:00–15:30）</label>
-      <div class="group" data-key="interval">
+      <div class="group multi" data-key="interval">
         <button data-v="1">1分</button>
         <button data-v="3">3分</button>
         <button data-v="5">5分</button>
-      </div>
-    </div>
-
-    <div class="row">
-      <label>日経 音声通知（±1%ごと）</label>
-      <div class="group" data-key="voice">
-        <button data-v="on">オン</button>
-        <button data-v="off">オフ</button>
+        <button data-v="10">10分</button>
+        <button data-v="15">15分</button>
+        <button data-v="30">30分</button>
       </div>
     </div>
 
@@ -355,19 +336,23 @@
     <a href="privacy.html" class="usage-link">プライバシー・免責事項 →</a>
   </div>
 
+  <div class="renewal-notice" id="renewalNotice">
+    <span>日経平均機能を削除し、「東京市場のための時計」にリニューアルしました。</span>
+    <button class="renewal-close" id="renewalClose" aria-label="閉じる">×</button>
+  </div>
+
   <div class="status">
     <span class="market-dot" id="marketDot"></span>TOKYO / JST
   </div>
 
 <script>
-  const S = { activeIdx: 0, blink: 'on', interval: 3, sound: 'beep', voice: 'off' };
+  const S = { activeIdx: 0, blink: 'on', interval: 3, sound: 'beep' };
   const EMBEDDED = (() => { try { return window.self !== window.top; } catch { return true; } })();
   if (!EMBEDDED) {
     try { Object.assign(S, JSON.parse(localStorage.getItem('tokyoClock') || '{}')); } catch {}
   } else {
     S.sound = 'silent';
     S.blink = 'off';
-    S.voice = 'off';
   }
   if (S.sound !== 'beep' && S.sound !== 'silent') S.sound = 'beep';
   const cycle = ['h', 'm', 's', 'm'];
@@ -609,97 +594,6 @@
   render();
   setInterval(render, 200);
 
-  // ===== Nikkei 225 (^N225) =====
-  const NK_ENDPOINT = 'https://nikkei-proxy.41morinaga.workers.dev/';
-  const NK_GRAD = {
-    base: { from: [10, 10, 14], to: [26, 26, 36] },
-    up:   { from: [32, 4, 8],   to: [176, 16, 24] },
-    dn:   { from: [6, 16, 42],  to: [24, 80, 192] },
-  };
-  const nkLerp = (a, b, t) => Math.round(a + (b - a) * t);
-  const nkMix = (c0, c1, t) => `rgb(${nkLerp(c0[0],c1[0],t)},${nkLerp(c0[1],c1[1],t)},${nkLerp(c0[2],c1[2],t)})`;
-  let nkLastBand = null;
-  function nkSpeak(level) {
-    if (!('speechSynthesis' in window)) return;
-    const sign = level > 0 ? 'プラス' : 'マイナス';
-    const u = new SpeechSynthesisUtterance(`日経 ${sign} ${Math.abs(level)} パーセント`);
-    u.lang = 'ja-JP';
-    u.rate = 1.0;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
-  }
-  function nkCheckBand(pct) {
-    if (!isFinite(pct)) return;
-    const band = Math.trunc(pct);
-    if (nkLastBand === null) { nkLastBand = band; return; }
-    if (band !== nkLastBand) {
-      if (S.voice === 'on' && band !== 0) nkSpeak(band);
-      nkLastBand = band;
-    }
-  }
-  function nkApplyGradient(pct) {
-    const body = document.body;
-    if (!isFinite(pct) || pct === 0) {
-      body.style.removeProperty('--bg-from');
-      body.style.removeProperty('--bg-to');
-      return;
-    }
-    const intensity = Math.min(Math.abs(pct) / 5, 1);
-    const target = pct > 0 ? NK_GRAD.up : NK_GRAD.dn;
-    body.style.setProperty('--bg-from', nkMix(NK_GRAD.base.from, target.from, intensity));
-    body.style.setProperty('--bg-to',   nkMix(NK_GRAD.base.to,   target.to,   intensity));
-  }
-  const nkEl = document.getElementById('nikkei');
-  const nkPriceEl = document.getElementById('nkPrice');
-  const nkChangeEl = document.getElementById('nkChange');
-  const nkPctEl = document.getElementById('nkPct');
-  const nkFmt = new Intl.NumberFormat('ja-JP', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  let nkLast = null;
-
-  async function nkFetch() {
-    const r = await fetch(NK_ENDPOINT, { cache: 'no-store' });
-    if (!r.ok) throw new Error('http ' + r.status);
-    const j = await r.json();
-    const meta = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
-    if (!meta || typeof meta.regularMarketPrice !== 'number') throw new Error('bad data');
-    const prev = (typeof meta.chartPreviousClose === 'number') ? meta.chartPreviousClose : meta.previousClose;
-    return { price: meta.regularMarketPrice, prev };
-  }
-
-  function nkApply(d) {
-    const change = d.price - d.prev;
-    const pct = (change / d.prev) * 100;
-    nkPriceEl.textContent = nkFmt.format(d.price);
-    const sign = change >= 0 ? '+' : '−';
-    nkChangeEl.textContent = sign + nkFmt.format(Math.abs(change));
-    nkPctEl.textContent = sign + Math.abs(pct).toFixed(2) + '%';
-    nkEl.classList.remove('err', 'up', 'dn');
-    nkEl.classList.add(change >= 0 ? 'up' : 'dn');
-
-    nkApplyGradient(pct);
-    nkCheckBand(pct);
-  }
-
-  async function nkRefresh() {
-    try {
-      const d = await nkFetch();
-      nkLast = d;
-      nkApply(d);
-    } catch (e) {
-      if (!nkLast) {
-        nkEl.classList.add('err');
-        nkPriceEl.textContent = '取得失敗';
-        nkChangeEl.textContent = '';
-        nkPctEl.textContent = '';
-      }
-    }
-  }
-  function nkMarketOpenNow() {
-    const t = tokyoParts();
-    const d = tokyoDateStr();
-    if (!isMarketDay(d.week, d.raw)) return false;
-    return isMarketOpen(+t.hour, +t.minute);
-  }
   const closingStatusEl = document.getElementById('closingStatus');
   function updateClosingStatus() {
     const t = tokyoParts();
@@ -722,8 +616,25 @@
   }
   setInterval(updateClosingStatus, 500);
   updateClosingStatus();
-  nkRefresh(); // always fetch once on load so closed-hours show last close
-  setInterval(() => { if (nkMarketOpenNow()) nkRefresh(); }, 2000);
+
+  // Renewal notice: shown for 1 week after release, closeable via ×
+  const RELEASE_DATE = new Date('2026-05-04T00:00:00+09:00');
+  const renewalNotice = document.getElementById('renewalNotice');
+  if (EMBEDDED) {
+    renewalNotice.hidden = true;
+  } else {
+    const expired = (Date.now() - RELEASE_DATE.getTime()) > 7 * 24 * 60 * 60 * 1000;
+    const closed = (() => { try { return localStorage.getItem('renewalNoticeClosed') === '1'; } catch { return false; } })();
+    if (expired || closed) {
+      renewalNotice.hidden = true;
+    } else {
+      document.getElementById('renewalClose').addEventListener('click', (e) => {
+        e.stopPropagation();
+        renewalNotice.hidden = true;
+        try { localStorage.setItem('renewalNoticeClosed', '1'); } catch {}
+      });
+    }
+  }
 </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>使い方 — hotokei</title>
-<meta name="description" content="hotokei の機能と使い方の解説。時計、日経平均（リアルタイム近く）、背景グラデーション、音声通知、引け処理中表示など。">
+<meta name="description" content="hotokei の機能と使い方の解説。大きな時計、寄り付きカウントダウン、引け処理中表示、定期点滅など、東京市場のための時計機能を紹介。">
 <meta name="theme-color" content="#0a0a0e">
 <link rel="canonical" href="https://hotokei.com/about.html">
 
@@ -12,14 +12,14 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="hotokei">
 <meta property="og:title" content="使い方 — hotokei">
-<meta property="og:description" content="hotokei の機能と使い方の解説。時計、日経平均、背景グラデーション、音声通知、引け処理中表示など。">
+<meta property="og:description" content="hotokei の機能と使い方の解説。東京市場のための時計。">
 <meta property="og:url" content="https://hotokei.com/about.html">
 <meta property="og:locale" content="ja_JP">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使い方 — hotokei">
-<meta name="twitter:description" content="hotokei の機能と使い方の解説。">
+<meta name="twitter:description" content="hotokei の機能と使い方の解説。東京市場のための時計。">
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-T4KTK263GY"></script>
@@ -69,26 +69,6 @@
     font-size: clamp(14px, 2.8vw, 18px);
     color: #7a7a83;
     letter-spacing: 0.12em;
-  }
-  .hero .gradient-strip {
-    margin-top: 32px;
-    height: 8px;
-    border-radius: 4px;
-    background: linear-gradient(90deg,
-      #1850c0 0%,
-      #5a8e1a 25%,
-      #1a1a24 50%,
-      #c25018 75%,
-      #b01018 100%);
-    opacity: 0.7;
-  }
-  .hero .gradient-labels {
-    margin-top: 8px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #5a5a63;
-    letter-spacing: 0.1em;
   }
 
   /* Sections */
@@ -162,31 +142,7 @@
     color: #e0e0e6;
   }
 
-  .accent-up { color: #ffb4b4; }
-  .accent-dn { color: #b4ffb4; }
   .accent-warn { color: #f59e0b; }
-
-  .disclaimer {
-    background: rgba(245, 158, 11, 0.07);
-    border: 1px solid rgba(245, 158, 11, 0.25);
-    border-left: 3px solid #f59e0b;
-    padding: 20px 24px;
-    border-radius: 8px;
-    margin: 32px 0;
-  }
-  .disclaimer h3 {
-    color: #f59e0b;
-    font-size: clamp(15px, 3vw, 18px);
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-  .disclaimer p {
-    color: #d4ad6a;
-    font-size: clamp(13px, 2.5vw, 15px);
-    margin-bottom: 8px;
-  }
-  .disclaimer p:last-child { margin-bottom: 0; }
-  .disclaimer strong { color: #f5cf91; }
 
   .back-cta {
     text-align: center;
@@ -225,24 +181,14 @@
   <div class="container">
     <header class="hero">
       <h1>hotokei</h1>
-      <p class="tagline">時計 × 日経平均 — ミニマル・ダッシュボード</p>
-      <div class="gradient-strip" aria-hidden="true"></div>
-      <div class="gradient-labels" aria-hidden="true">
-        <span>−5%</span><span>−1%</span><span>0</span><span>+1%</span><span>+5%</span>
-      </div>
+      <p class="tagline">東京市場のための時計 — サブディスプレイの片隅に。</p>
     </header>
 
     <section>
       <h2>hotokei とは</h2>
-      <p>大きな時計と日経平均を1画面に集約したシンプルなダッシュボードです。サブディスプレイや常時表示タブにそのまま置いておき、視界の隅で <strong>「時刻」と「相場の温度」</strong> を同時に掴めます。</p>
+      <p>東京証券取引所のザラ場時間(9:00〜15:30)を体感するための、ミニマルな時計です。サブディスプレイや常時表示タブにそのまま置いておくことで、視界の隅で <strong>「今、市場のどこにいるか」</strong> を感じ取れます。</p>
+      <p style="margin-top: 12px;">寄り付きまでのカウントダウン、引け前後の状態表示、市場開閉の可視化など、東京市場の時間構造そのものを表現することに特化しています。</p>
     </section>
-
-    <div class="disclaimer">
-      <h3>⚠ 重要な注意事項（はじめに必ずお読みください）</h3>
-      <p>表示している日経平均は <strong>Yahoo Finance</strong> 経由で取得しており、<strong>1〜数十秒の遅延</strong>があります。</p>
-      <p><strong>絶対にトレード判断には使わないでください。</strong> 取引判断には必ず証券会社（SBI、楽天、auカブコム等）のリアルタイム表示を使用してください。</p>
-      <p>特に <strong>引け前後（15:25〜15:35）</strong> は SBI 等のリアルタイム配信と数百円ズレることがあります。</p>
-    </div>
 
     <section>
       <h2>主な機能</h2>
@@ -253,33 +199,15 @@
       </div>
 
       <div class="feature">
-        <h3>日経平均（リアルタイム近く）</h3>
-        <p>東京市場 9:00〜15:30 の間、<strong>2秒間隔</strong>で日経平均（^N225）を取得し、現在値・前日比・騰落率を3行で表示。市場時間外は前回値（多くの場合 当日終値）を固定表示します。</p>
-      </div>
-
-      <div class="feature">
-        <h3>背景グラデーションで「相場の温度」</h3>
-        <p>前日比%に応じて背景が <strong>連続的に</strong> 変化します。</p>
-        <p><span class="accent-up">プラス側 → 0% は暗色、+5%以上で赤最大（赤が濃くなるほど強い上昇）</span></p>
-        <p><span class="accent-dn">マイナス側 → 0% は暗色、−5%以下で青最大（青が濃くなるほど強い下落）</span></p>
-      </div>
-
-      <div class="feature">
-        <h3>音声通知（±1%バンド毎）</h3>
-        <p>整数1%のバンド（+1, +2, …, +5, −1, −2, …, −5）を跨ぐ瞬間に音声で読み上げ。例: 0.8% → 1.2% で <code>日経 プラス1パーセント</code>。</p>
-        <p>設定 → 「日経 音声通知」で ON/OFF（デフォルト OFF）。離席中の大きな変動察知に便利。</p>
+        <h3>寄り付き10秒前カウントダウン</h3>
+        <p>9:00 寄り付きの10秒前から「開始まで X秒」表示 + ティック音で寄り意識を喚起します。</p>
       </div>
 
       <div class="feature">
         <h3>引け処理中 / 確定中の表示</h3>
-        <p>引け前後の値が信用しにくい時間帯にオレンジで点滅警告。</p>
+        <p>引け前後の状態をオレンジで点滅表示。</p>
         <p><span class="accent-warn">15:29:00 〜 15:30:29 → 引け処理中</span></p>
         <p><span class="accent-warn">15:30:30 〜 15:34:59 → 確定中</span></p>
-      </div>
-
-      <div class="feature">
-        <h3>寄り付き10秒前カウントダウン</h3>
-        <p>9:00 寄り付きの10秒前から「開始まで X秒」表示 + ティック音で寄り意識を喚起。</p>
       </div>
 
       <div class="feature">
@@ -289,7 +217,7 @@
 
       <div class="feature">
         <h3>定期点滅（オプション）</h3>
-        <p>市場時間中、設定間隔（1/3/5分）ごとに背景が一瞬白く反転。時間経過の感覚を保てます。</p>
+        <p>市場時間中、設定間隔（1/3/5/10/15/30分）ごとに背景が一瞬白く反転。時間経過の感覚を保てます。</p>
       </div>
     </section>
 
@@ -309,8 +237,7 @@
       <ul>
         <li><strong>点滅</strong> — 市場時間中の背景フラッシュ（ON/OFF）</li>
         <li><strong>通知音</strong> — 点滅／カウントダウンの音（ピピッ／無音）</li>
-        <li><strong>間隔</strong> — 点滅と音の間隔（1分／3分／5分）</li>
-        <li><strong>日経 音声通知</strong> — ±1%跨ぎ時の読み上げ（ON/OFF）</li>
+        <li><strong>間隔</strong> — 点滅と音の間隔（1分／3分／5分／10分／15分／30分）</li>
       </ul>
       <p style="margin-top:12px;">設定は <code>localStorage</code> に保存され、次回アクセス時も保持されます。</p>
     </section>
@@ -318,11 +245,10 @@
     <section>
       <h2>こんな使い方がおすすめ</h2>
       <ul>
-        <li>サブディスプレイの常時表示で「相場の温度」を背景色で感じる</li>
-        <li>離席中に音声通知で大きな変動を察知</li>
-        <li>ザラ場中の時間意識を時計と一緒に保つ</li>
+        <li>サブディスプレイの常時表示 — 作業の邪魔にならず、視界の隅で市場時間を意識</li>
+        <li>ザラ場中の時間感覚を保つ — 大きな時計で時間の流れを把握</li>
         <li>朝 8:59 から 9:00 寄り付きをカウントダウンで体験</li>
-        <li>引け間際の判断タイミングを「引け処理中」表示で把握</li>
+        <li>引け間際のタイミングを「引け処理中」表示で把握</li>
       </ul>
     </section>
 
